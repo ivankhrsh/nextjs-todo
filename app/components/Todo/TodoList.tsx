@@ -1,12 +1,11 @@
 import React from 'react'
 import TodoItem from './TodoItem'
-import { Todo } from '../../types/Todo.type';
-import AddTodo from './AddTodo';
 import { Timestamp, addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/app/firebase/firebaseClient';
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidateTag } from 'next/cache'
+import { Todo } from '../../types/Todo.type';
+import AddTodo from './AddTodo';
 import SignOut from '../Auth/SignOut';
-import { toast } from 'react-toastify';
 
 export default async function TodoList() {
   async function fetchTodos() {
@@ -21,13 +20,13 @@ export default async function TodoList() {
         const data = await res.json();
         return data;
       } else {
-        toast.error(`Failed to fetch data. Status code: ${res.status}`);
+        console.error(`Failed to fetch data. Status code: ${res.status}`);
       }
     } catch (error) {
-      toast.error(`Error: ${error}`);
+      console.error(`Error: ${error}`);
     }
   }
-  
+
   let todos: Todo[] = [];
   todos = await fetchTodos();
 
