@@ -9,26 +9,22 @@ import SignOut from '../Auth/SignOut';
 
 export default async function TodoList() {
   async function fetchTodos() {
-    try {
-      // revalidate: 360 means revalidate each 10 minutes
-      const res = await fetch("http://localhost:3000/api/todos", {
-        next: {tags: ['todos'], revalidate: 360},
-        method: "GET", 
-      });
-  
-      if (res.ok) {
-        const data = await res.json();
-        return data;
-      } else {
-        console.error(`Failed to fetch data. Status code: ${res.status}`);
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
+    // revalidate: 360 means revalidate each 10 minutes
+    const res = await fetch("http://localhost:3000/api/todos", {
+      next: {tags: ['todos'], revalidate: 360},
+      method: "GET", 
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      console.error(`Failed to fetch data. Status code: ${res.status}`);
     }
   }
 
-  let todos: Todo[] = [];
-  todos = await fetchTodos();
+  const todos: Todo[] = await fetchTodos();
+  
 
   const toggleComplete = async (todo: Todo) => {
     'use server'
