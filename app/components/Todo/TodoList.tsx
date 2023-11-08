@@ -2,29 +2,33 @@ import React from 'react'
 import TodoItem from './TodoItem'
 import { Timestamp, addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/app/firebase/firebaseClient';
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { Todo } from '../../types/Todo.type';
 import AddTodo from './AddTodo';
 import SignOut from '../Auth/SignOut';
+import { initAdmin } from '@/app/firebase/firebaseAdmin';
+import { getTodos } from '@/app/firebase/firebaseGetData';
 
 export default async function TodoList() {
-  async function fetchTodos() {
-    const url = process.env.PROJECT_URL;
-    // revalidate: 360 means revalidate each 10 minutes
-    const res = await fetch(`${url}/api/todos`, {
-      next: {tags: ['todos'], revalidate: 360},
-      method: "GET", 
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      return data;
-    } else {
-      console.error(`Failed to fetch data. Status code: ${res.status}`);
-    }
-  }
+  await initAdmin();
+  const todos = await getTodos();
 
-  const todos: Todo[] = await fetchTodos();
+  // async function fetchTodos() {
+  //   const url = process.env.PROJECT_URL;
+  //   // revalidate: 360 means revalidate each 10 minutes
+  //   const res = await fetch(`${url}/api/todos`, {
+  //     next: {tags: ['todos'], revalidate: 360},
+  //     method: "GET", 
+  //   });
+    
+  //   if (res.ok) {
+  //     const data = await res.json();
+  //     return data;
+  //   } else {
+  //     console.error(`Failed to fetch data. Status code: ${res.status}`);
+  //   }
+  // }
+  // const todos: Todo[] = await fetchTodos();
   
 
   const toggleComplete = async (todo: Todo) => {
@@ -32,13 +36,16 @@ export default async function TodoList() {
     await updateDoc(doc(db, 'todos', todo.id), {
       completed:!todo.completed
     });
-    revalidateTag('todos');
+    // revalidateTag('todos');
+    revalidatePath('/todos');
   };
 
   const deleteTodo = async (todo: Todo) => {
     'use server'
     await deleteDoc(doc(db, 'todos', todo.id));
-    revalidateTag('todos');
+    // revalidateTag('todos');
+    revalidatePath('/todos');
+
   };
 
   const handleAddTodo = async (title: string, description: string) => {
@@ -50,7 +57,8 @@ export default async function TodoList() {
       completed: false,
       createdAt: currentTimestamp,
     });
-    revalidateTag('todos');
+    // revalidateTag('todos');
+    revalidatePath('/todos');
   };
 
   const handleUpdateTodo = async (title: string, description: string, todoId: string) => {
@@ -61,7 +69,8 @@ export default async function TodoList() {
       description,
       createdAt: currentTimestamp,
     });
-    revalidateTag('todos');
+    // revalidateTag('todos');
+    revalidatePath('/todos');
   };
 
   return (
