@@ -1,22 +1,13 @@
-'use client';
+"use client";
+import React from 'react';
+import AuthContainer from './components/Auth/AuthContainer';
 
-import Header from './components/Header';
-import TodoList from './components/Todo/TodoList';
-import { UserAuth } from './context/AuthContextProvider';
-
-export default function Home() {
-  const { user } = UserAuth();
-
-  const styles = {
-    main: "flex gap-1 flex-col items-center justify-between",
-    title: "text-2xl p-4",
-  };
-
+const SignIn = () => {
   return (
-    <main className={styles.main}>
-      <h1 className={styles.title}>Todo app ✅</h1>
-      <Header />
-      {user && <TodoList />}
-    </main>
+    <div className='mt-10'>
+      <AuthContainer />
+    </div>
   );
-}
+};
+
+export default SignIn;

@@ -1,4 +1,4 @@
-import { UserAuth } from '@/app/context/AuthContextProvider';
+import { createUser } from '@/app/firebase/firebaseClient';
 import { validationSchema } from './validationSchema';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
@@ -11,8 +11,6 @@ const styles = {
 };
 
 export const SignUpForm = () => {
-  const { createUser } = UserAuth();
-
   return (
     <Formik
       initialValues={{

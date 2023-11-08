@@ -1,13 +1,17 @@
+// 'use client'
+
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import { validationSchema } from './validationSchema';
 import { Timestamp, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/app/firebase/clientApp';
+import { db } from '@/app/firebase/firebaseClient';
 import { Todo } from '@/app/types/Todo.type';
+import { revalidateTag } from 'next/cache';
 
 interface Props {
   todo: Todo;
   toggleEditing: () => void;
+  updateTodo: (title: string, description: string, todoId: string) => void;
 }
 
 const styles = {
@@ -18,16 +22,7 @@ const styles = {
   cancelButton: 'px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600',
 };
 
-export const EditTodo: FC<Props> = ({ todo, toggleEditing }) => {
-  const handleAddTodo = async (title: string, description: string) => {
-    const currentTimestamp = Timestamp.fromDate(new Date());
-    await updateDoc(doc(db, 'todos', todo.id), {
-      title,
-      description,
-      createdAt: currentTimestamp,
-    });
-  };
-
+export const EditTodo: FC<Props> = ({ todo, toggleEditing, updateTodo }) => {
   return (
     <Formik
       initialValues={{
@@ -36,7 +31,7 @@ export const EditTodo: FC<Props> = ({ todo, toggleEditing }) => {
       }}
       validationSchema={validationSchema}
       onSubmit={({ title, description }) => {
-        handleAddTodo(title, description);
+        updateTodo(title, description, todo.id);
         toggleEditing();
       }}
     >

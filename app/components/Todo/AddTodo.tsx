@@ -1,8 +1,11 @@
+'use client'
+
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import React from 'react';
+import React, { FC } from 'react';
 import { validationSchema } from './validationSchema';
 import { Timestamp, addDoc, collection } from 'firebase/firestore';
-import { db } from '@/app/firebase/clientApp';
+import { db } from '@/app/firebase/firebaseClient';
+import { revalidatePath } from 'next/cache';
 
 const styles = {
   label: 'block text-gray-700 text-sm font-bold mb-2',
@@ -11,17 +14,11 @@ const styles = {
   button: 'w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300',
 };
 
-export const AddTodo = () => {
-  const handleAddTodo = async (title: string, description: string) => {
-    const currentTimestamp = Timestamp.fromDate(new Date());
-    await addDoc(collection(db, 'todos'), {
-      title,
-      description,
-      completed: false,
-      createdAt: currentTimestamp,
-    });
-  };
+interface Props {
+  addTodo: (title: string, description: string) => void;
+}
 
+const AddTodo: FC<Props> = ({ addTodo }) => {
   return (
     <Formik
       initialValues={{
@@ -30,7 +27,7 @@ export const AddTodo = () => {
       }}
       validationSchema={validationSchema}
       onSubmit={({ title, description }, { resetForm }) => {
-        handleAddTodo(title, description);
+        addTodo(title, description);
         resetForm();
       }}
     >
@@ -73,3 +70,5 @@ export const AddTodo = () => {
     </Formik>
   );
 };
+
+export default AddTodo;

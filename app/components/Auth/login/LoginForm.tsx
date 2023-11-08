@@ -1,6 +1,7 @@
 import { validationSchema } from './validationSchema';
-import { UserAuth } from '@/app/context/AuthContextProvider';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { auth, loginWithWithEmail } from '@/app/firebase/firebaseClient';
+
 
 const styles = {
   inputContainer: 'mb-4',
@@ -11,14 +12,12 @@ const styles = {
 };
 
 export const LoginForm = () => {
-  const { signInWithEmail } = UserAuth();
-
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
       validationSchema={validationSchema}
       onSubmit={({ email, password }) => {
-        signInWithEmail(email, password);
+        loginWithWithEmail(email, password);
       }}
     >
       {() => (
