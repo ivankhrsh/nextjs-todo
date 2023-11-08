@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore} from "firebase/firestore";
-import { EmailAuthProvider, GithubAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithRedirect } from "firebase/auth";
+import {GithubAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
 
 const clientCredentials = {
@@ -43,5 +43,5 @@ export const createUser = (email: string, password: string) => {
 };
 
 export function signInWithGithub() {
-  signInWithRedirect(auth, provider);
+  signInWithPopup(auth, provider);
 }
