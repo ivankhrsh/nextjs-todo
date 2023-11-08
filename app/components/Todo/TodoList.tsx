@@ -9,8 +9,9 @@ import SignOut from '../Auth/SignOut';
 
 export default async function TodoList() {
   async function fetchTodos() {
+    const url = process.env.PROJECT_URL;
     // revalidate: 360 means revalidate each 10 minutes
-    const res = await fetch("http://localhost:3000/api/todos", {
+    const res = await fetch(`${url}/api/todos`, {
       next: {tags: ['todos'], revalidate: 360},
       method: "GET", 
     });
