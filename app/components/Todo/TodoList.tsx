@@ -32,10 +32,7 @@ export default async function TodoList() {
   // const todos: Todo[] = await fetchTodos();
 
   await initAdmin();
-  let todos = async () => {
-    'use server'
-    await getTodos();
-  };
+  let todos = await getTodos();
 
   revalidatePath(`${process.env.PROJECT_URL}/`);
 
