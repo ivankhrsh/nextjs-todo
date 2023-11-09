@@ -14,41 +14,40 @@ import { getTodos } from '@/app/firebase/firebaseGetData';
 export default async function TodoList() {
   // fetch from api and then revalidate with revalidateTag('todos') 
   // works well on local, but got problems at build
-  async function fetchTodos() {
-    // revalidate: 60 means revalidate each 1 minute
-    const res = await fetch(`${process.env.PROJECT_URL}/api/todos`, {
-      method: "GET",
-      next: {tags: ['todos']},
-      // next: {tags: ['todos'], revalidate: 60},
-    });
+  // async function fetchTodos() {
+  //   // revalidate: 60 means revalidate each 1 minute
+  //   const res = await fetch(`${process.env.PROJECT_URL}/api/todos`, {
+  //     method: "GET",
+  //     next: {tags: ['todos']},
+  //     // next: {tags: ['todos'], revalidate: 60},
+  //   });
     
-    if (res.ok) {
-      const data = await res.json();
-      return data;
-    } else {
-      console.error(`Failed to fetch data. Status code: ${res.status}`);
-    }
-  }
-  const todos: Todo[] = await fetchTodos();
+  //   if (res.ok) {
+  //     const data = await res.json();
+  //     return data;
+  //   } else {
+  //     console.error(`Failed to fetch data. Status code: ${res.status}`);
+  //   }
+  // }
+  // const todos: Todo[] = await fetchTodos();
 
-  // await initAdmin();
-  // let todos = await getTodos();
-  console.log(todos);
+  await initAdmin();
+  let todos = await getTodos();
 
   const toggleComplete = async (todo: Todo) => {
     'use server'
     await updateDoc(doc(db, 'todos', todo.id), {
       completed:!todo.completed
     })
-    revalidateTag('todos');
-    //  revalidatePath(`${process.env.PROJECT_URL}/`);
+    // revalidateTag('todos');
+     revalidatePath(`${process.env.PROJECT_URL}/`);
   };
 
   const deleteTodo = async (todo: Todo) => {
     'use server'
     await deleteDoc(doc(db, 'todos', todo.id));
-    //  revalidatePath(`${process.env.PROJECT_URL}/`);
-     revalidateTag('todos');
+     revalidatePath(`${process.env.PROJECT_URL}/`);
+    //  revalidateTag('todos');
   };
 
   const handleAddTodo = async (title: string, description: string) => {
@@ -60,8 +59,8 @@ export default async function TodoList() {
       completed: false,
       createdAt: currentTimestamp,
     });
-    //  revalidatePath(`${process.env.PROJECT_URL}/`);
-    revalidateTag('todos');
+     revalidatePath(`${process.env.PROJECT_URL}/`);
+    // revalidateTag('todos');
   };
 
   const handleUpdateTodo = async (title: string, description: string, todoId: string) => {
@@ -72,8 +71,8 @@ export default async function TodoList() {
       description,
       createdAt: currentTimestamp,
     });
-    //  revalidatePath(`${process.env.PROJECT_URL}/`);
-    revalidateTag('todos');
+     revalidatePath(`${process.env.PROJECT_URL}/`);
+    // revalidateTag('todos');
   };
 
   return (
