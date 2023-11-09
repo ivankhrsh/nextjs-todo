@@ -36,6 +36,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
 export async function GET(request: NextRequest) {
   const session = cookies().get("session")?.value || "";
+  console.log(cookies());
 
   //Validate if the cookie exist in the request
   if (!session) {
@@ -49,5 +50,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ isLogged: false }, { status: 401 });
   }
 
-  return NextResponse.json({ isLogged: true }, { status: 200 });
+  return NextResponse.json({ isLogged: true, cookies: cookies().get("session") }, { status: 200 });
 }
