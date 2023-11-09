@@ -1,8 +1,7 @@
 import "server-only";
 import { getFirestore } from "firebase-admin/firestore";
-import { Timestamp, addDoc, collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./firebaseClient";
-import { revalidatePath } from "next/cache";
 
 export const getTodos = async () => {
   const firestore = getFirestore();
