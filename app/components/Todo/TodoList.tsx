@@ -10,24 +10,24 @@ import { initAdmin } from '@/app/firebase/firebaseAdmin';
 import { getTodos } from '@/app/firebase/firebaseGetData';
 
 export default async function TodoList() {
-  await initAdmin();
-  const todos = await getTodos();
+  // await initAdmin();
+  // const todos = await getTodos();
 
-  // async function fetchTodos() {
-  //   // revalidate: 360 means revalidate each 10 minutes
-  //   const res = await fetch('/api/todos', {
-  //     next: {tags: ['todos'], revalidate: 360},
-  //     method: "GET", 
-  //   });
+  async function fetchTodos() {
+    // revalidate: 360 means revalidate each 10 minutes
+    const res = await fetch(`${process.env.PROJECT_URL}/api/todos`, {
+      method: "GET", 
+      next: {tags: ['todos'], revalidate: 360},
+    });
     
-  //   if (res.ok) {
-  //     const data = await res.json();
-  //     return data;
-  //   } else {
-  //     console.error(`Failed to fetch data. Status code: ${res.status}`);
-  //   }
-  // }
-  // const todos: Todo[] = await fetchTodos();
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      console.error(`Failed to fetch data. Status code: ${res.status}`);
+    }
+  }
+  const todos: Todo[] = await fetchTodos();
   
 
   const toggleComplete = async (todo: Todo) => {
@@ -35,15 +35,15 @@ export default async function TodoList() {
     await updateDoc(doc(db, 'todos', todo.id), {
       completed:!todo.completed
     });
-    // revalidateTag('todos');
-    revalidatePath('/todos');
+    revalidateTag('todos');
+    // revalidatePath('/todos');
   };
 
   const deleteTodo = async (todo: Todo) => {
     'use server'
     await deleteDoc(doc(db, 'todos', todo.id));
-    // revalidateTag('todos');
-    revalidatePath('/todos');
+    revalidateTag('todos');
+    // revalidatePath('/todos');
 
   };
 
@@ -56,8 +56,8 @@ export default async function TodoList() {
       completed: false,
       createdAt: currentTimestamp,
     });
-    // revalidateTag('todos');
-    revalidatePath('/todos');
+    revalidateTag('todos');
+    // revalidatePath('/todos');
   };
 
   const handleUpdateTodo = async (title: string, description: string, todoId: string) => {
