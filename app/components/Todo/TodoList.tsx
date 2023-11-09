@@ -32,7 +32,12 @@ export default async function TodoList() {
   // const todos: Todo[] = await fetchTodos();
 
   await initAdmin();
-  let todos = await getTodos();
+  let todos = async () => {
+    'use server'
+    await getTodos();
+  };
+
+  revalidatePath(`${process.env.PROJECT_URL}/`);
 
   const toggleComplete = async (todo: Todo) => {
     'use server'

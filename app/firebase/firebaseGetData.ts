@@ -4,6 +4,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./firebaseClient";
 
 export const getTodos = async () => {
+  'use server'
   const firestore = getFirestore();
   const todosQuery = query(collection(db, 'todos'), orderBy('createdAt', 'desc'));
   const todosSnapshot = await getDocs(todosQuery);
