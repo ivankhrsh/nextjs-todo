@@ -50,5 +50,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ isLogged: false }, { status: 401 });
   }
 
-  return NextResponse.json({ isLogged: true, cookies: cookies().get("session") }, { status: 200 });
+  return NextResponse.json({ isLogged: true }, { status: 200 });
 }
