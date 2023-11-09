@@ -3,10 +3,7 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import { validationSchema } from './validationSchema';
-import { Timestamp, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/app/firebase/firebaseClient';
 import { Todo } from '@/app/types/Todo.type';
-import { revalidateTag } from 'next/cache';
 
 interface Props {
   todo: Todo;

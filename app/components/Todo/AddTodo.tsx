@@ -3,9 +3,6 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import { validationSchema } from './validationSchema';
-import { Timestamp, addDoc, collection } from 'firebase/firestore';
-import { db } from '@/app/firebase/firebaseClient';
-import { revalidatePath } from 'next/cache';
 
 const styles = {
   label: 'block text-gray-700 text-sm font-bold mb-2',

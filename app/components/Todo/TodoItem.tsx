@@ -1,11 +1,7 @@
 'use client'
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState } from 'react';
 import { Todo } from '../../types/Todo.type';
 import { EditTodo } from './EditTodo';
-import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/app/firebase/firebaseClient';
-import { revalidateTag } from 'next/cache';
-
 interface Props {
   todo: Todo;
   toggleComplete: (todo: Todo) => void;
