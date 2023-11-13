@@ -3,6 +3,7 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import { validationSchema } from './validationSchema';
+import { handleAddTodo } from '@/app/firebase/firebaseActions';
 
 const styles = {
   label: 'block text-gray-700 text-sm font-bold mb-2',
@@ -11,11 +12,7 @@ const styles = {
   button: 'w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300',
 };
 
-interface Props {
-  addTodo: (title: string, description: string) => void;
-}
-
-const AddTodo: FC<Props> = ({ addTodo }) => {
+const AddTodo: FC = () => {
   return (
     <Formik
       initialValues={{
@@ -24,7 +21,7 @@ const AddTodo: FC<Props> = ({ addTodo }) => {
       }}
       validationSchema={validationSchema}
       onSubmit={({ title, description }, { resetForm }) => {
-        addTodo(title, description);
+        handleAddTodo(title, description)
         resetForm();
       }}
     >

@@ -2,11 +2,9 @@
 import React, { FC, useState } from 'react';
 import { Todo } from '../../types/Todo.type';
 import { EditTodo } from './EditTodo';
+import { deleteTodo, handleUpdateTodo } from '@/app/firebase/firebaseActions';
 interface Props {
   todo: Todo;
-  toggleComplete: (todo: Todo) => void;
-  deleteTodo: (todo: Todo) => void;
-  updateTodo: (title: string, description: string, todoId: string) => void;
 }
 
 const styles = {
@@ -18,7 +16,7 @@ const styles = {
   deleteButton: "px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600",
 };
 
-const TodoItem: FC<Props> = ({ todo, toggleComplete, deleteTodo, updateTodo }) => {
+const TodoItem: FC<Props> = ({ todo}) => {
   const [isEditing, setIsEditing] = useState(false);
   const { title, description, completed, createdAt } = todo;
 
@@ -27,18 +25,18 @@ const TodoItem: FC<Props> = ({ todo, toggleComplete, deleteTodo, updateTodo }) =
   };
 
   const handleDelete = () => {
-    deleteTodo(todo);
+    deleteTodo(todo.id)
   };
 
   const handleToggle = () => {
-    toggleComplete(todo);
+    handleUpdateTodo({id: todo.id, completed: !completed})
   };
 
 
   if (isEditing) {
     return (
       <div className={styles.container}>
-        <EditTodo todo={todo} toggleEditing={toggleEditing} updateTodo={updateTodo} />
+        <EditTodo todo={todo} toggleEditing={toggleEditing}/>
       </div>
     );
   }

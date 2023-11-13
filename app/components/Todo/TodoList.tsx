@@ -1,93 +1,56 @@
-import React from 'react'
-import TodoItem from './TodoItem'
-import { Timestamp, addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/app/firebase/firebaseClient';
-import { revalidatePath, revalidateTag } from 'next/cache'
-import { Todo } from '../../types/Todo.type';
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import AddTodo from './AddTodo';
 import SignOut from '../Auth/SignOut';
-import { initAdmin } from '@/app/firebase/firebaseAdmin';
-import { getTodos } from '@/app/firebase/firebaseGetData';
-// import { getTodos } from '@/app/firebase/firebaseGetData';
-// import { initAdmin } from '@/app/firebase/firebaseAdmin';
+import TodoItem from './TodoItem';
+import { Todo } from '@/app/types/Todo.type';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '@/app/firebase/firebaseClient';
 
-export default async function TodoList() {
-  // fetch from api and then revalidate with revalidateTag('todos') 
-  // works well on local, but got problems at build
-  // async function fetchTodos() {
-  //   // revalidate: 60 means revalidate each 1 minute
-  //   const res = await fetch(`${process.env.PROJECT_URL}/api/todos`, {
-  //     method: "GET",
-  //     next: {tags: ['todos']},
-  //     // next: {tags: ['todos'], revalidate: 60},
-  //   });
-    
-  //   if (res.ok) {
-  //     const data = await res.json();
-  //     return data;
-  //   } else {
-  //     console.error(`Failed to fetch data. Status code: ${res.status}`);
-  //   }
-  // }
-  // const todos: Todo[] = await fetchTodos();
+export default function TodoList() {
+  const [todos, setTodos] = useState<Todo[]>([]);
 
-  await initAdmin();
-  let todos = await getTodos();
+  function fetchTodos()  {
+    const q = query(collection(db, 'todos'), orderBy('creationTime', 'desc'));
+    const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
+      const todosArr: Todo[] = [];
+      QuerySnapshot.forEach((todo) => {
+        const createdAt = new Date(todo.data().creationTime.seconds * 1000)
+          .toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          });
 
-  revalidatePath(`${process.env.PROJECT_URL}/`);
-
-  const toggleComplete = async (todo: Todo) => {
-    'use server'
-    await updateDoc(doc(db, 'todos', todo.id), {
-      completed:!todo.completed
-    })
-    // revalidateTag('todos');
-     revalidatePath(`${process.env.PROJECT_URL}/`);
-  };
-
-  const deleteTodo = async (todo: Todo) => {
-    'use server'
-    await deleteDoc(doc(db, 'todos', todo.id));
-     revalidatePath(`${process.env.PROJECT_URL}/`);
-    //  revalidateTag('todos');
-  };
-
-  const handleAddTodo = async (title: string, description: string) => {
-    'use server'
-    const currentTimestamp = Timestamp.fromDate(new Date());
-    await addDoc(collection(db, 'todos'), {
-      title,
-      description,
-      completed: false,
-      createdAt: currentTimestamp,
+        todosArr.push(
+          { ...todo.data(),
+            title: todo.data().title,
+            description: todo.data().description,
+            completed: todo.data().completed,
+            createdAt, 
+            id: todo.id})
+      })
+      setTodos(todosArr);
     });
-     revalidatePath(`${process.env.PROJECT_URL}/`);
-    // revalidateTag('todos');
-  };
+    return () => unsubscribe();
+  }
 
-  const handleUpdateTodo = async (title: string, description: string, todoId: string) => {
-    'use server'
-    const currentTimestamp = Timestamp.fromDate(new Date());
-    await updateDoc(doc(db, 'todos', todoId), {
-      title,
-      description,
-      createdAt: currentTimestamp,
-    });
-     revalidatePath(`${process.env.PROJECT_URL}/`);
-    // revalidateTag('todos');
-  };
+  useEffect(() => {
+    fetchTodos();
+  },[]);
 
   return (
     <>
       <SignOut/>
-      <AddTodo addTodo={handleAddTodo}/>
+      <AddTodo/>
       {todos.length !== 0 && todos.map((todo) => (
         <TodoItem 
           todo={todo as Todo} 
-          key={todo.id} 
-          toggleComplete={toggleComplete}
-          deleteTodo={deleteTodo}
-          updateTodo={handleUpdateTodo}
+          key={todo.id}
         />
       ))}
     </>

@@ -4,11 +4,11 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import { validationSchema } from './validationSchema';
 import { Todo } from '@/app/types/Todo.type';
+import { handleUpdateTodo } from '@/app/firebase/firebaseActions';
 
 interface Props {
   todo: Todo;
   toggleEditing: () => void;
-  updateTodo: (title: string, description: string, todoId: string) => void;
 }
 
 const styles = {
@@ -19,7 +19,7 @@ const styles = {
   cancelButton: 'px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600',
 };
 
-export const EditTodo: FC<Props> = ({ todo, toggleEditing, updateTodo }) => {
+export const EditTodo: FC<Props> = ({ todo, toggleEditing }) => {
   return (
     <Formik
       initialValues={{
@@ -28,7 +28,7 @@ export const EditTodo: FC<Props> = ({ todo, toggleEditing, updateTodo }) => {
       }}
       validationSchema={validationSchema}
       onSubmit={({ title, description }) => {
-        updateTodo(title, description, todo.id);
+        handleUpdateTodo({title, description, id: todo.id});
         toggleEditing();
       }}
     >
